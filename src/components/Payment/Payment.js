@@ -1,28 +1,26 @@
+
 import React,{Component} from 'react';
 
-import{connect} from 'react-redux';
-import {savePayment,fetchPayment,updatePayment,fetchLanguages,fetchGenres} from '../../services/index';
-import {Card, Form, Button, Col, InputGroup, Image} from 'react-bootstrap';
+
+import {Card, Form, Button, Col } from 'react-bootstrap';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faSave, faPlusSquare, faUndo, faList, faEdit} from '@fortawesome/free-solid-svg-icons';
 import MyToast from '../MyToast';
+import axios from 'axios';
 
-class Payment extends Component {
+
+export default class Payment extends Component {
 
     constructor(props) {
         super(props);
         this.state = this.initialState;
-        this.state = {
-            genres: [],
-            languages : [],
-            show : false
-        };
+        this.state.show = false;
         this.paymentChange = this.paymentChange.bind(this);
         this.submitPayment = this.submitPayment.bind(this);
     }
 
     initialState = {
-        id:'', title:'', author:'', coverPhotoURL:'', isbnNumber:'', price:'', language:'', genre:''
+        id:'', nameOnTheCard:'', cvv:'', expiryDate:'', cardno:''
     };
 
     componentDidMount() {
@@ -30,60 +28,30 @@ class Payment extends Component {
         if(paymentId) {
             this.findPaymentById(paymentId);
         }
-        this.findAllLanguages();
+       
     }
 
-    findAllLanguages = () => {
-        this.props.fetchLanguages();
-        setTimeout(() => {
-            let paymentLanguages = this.props.paymentObject.languages;
-            if(paymentLanguages) {
-                this.setState({
-                    languages: [{value:'', display:'Select Language'}]
-                        .concat(paymentLanguages.map(language => {
-                            return {value:language, display:language}
-                        }))
-                });
-                this.findAllGenres();
-            }
-        }, 100);
-    };
-
-    findAllGenres = () => {
-        this.props.fetchGenres();
-        setTimeout(() => {
-            let paymentGenres = this.props.paymentObject.genres;
-            if(paymentGenres) {
-                this.setState({
-                    genres: [{value:'', display:'Select Genre'}]
-                        .concat(paymentGenres.map(genre => {
-                            return {value:genre, display:genre}
-                        }))
-                });
-            }
-        }, 100);
-    };
+   
 
     findPaymentById = (paymentId) => {
-        this.props.fetchBook(paymentId);
-        setTimeout(() => {
-            let payment = this.props.paymentObject.sweet;
-            if(payment != null) {
+        axios.get("http://localhost:8081/rest/payments/"+paymentId)
+        .then(response => {
+            if(response.data != null){
                 this.setState({
-                    id: payment.id,
-                    title: payment.title,
-                    author: payment.author,
-                    coverPhotoURL: payment.coverPhotoURL,
-                    isbnNumber: payment.isbnNumber,
-                    price: payment.price,
-                    language: payment.language,
-                    genre: payment.genre
-                });
-            }
-        }, 1000);
-    };
+                    id: response.data.id,
+                    nameOnTheCard: response.data.nameOnTheCard,
+                    cvv: response.data.cvv,
+                    expiryDate: response.data.expiryDate,
+                    cardno: response.data.cardno
+            });
+        }
+    }).catch((error) => {
+        console.error("Error -"+error);
+    });
+};
+        
 
-    resetSweet = () => {
+    resetPayment = () => {
         this.setState(() => this.initialState);
     };
 
@@ -91,51 +59,49 @@ class Payment extends Component {
         event.preventDefault();
 
         const payment = {
-            title: this.state.title,
-            author: this.state.author,
-            coverPhotoURL: this.state.coverPhotoURL,
-            isbnNumber: this.state.isbnNumber,
-            price: this.state.price,
-            language: this.state.language,
-            genre: this.state.genre
+            
+                    nameOnTheCard: this.state.nameOnTheCard,
+                    cvv: this.state.cvv,
+                    expiryDate: this.state.expiryDate,
+                    cardno: this.state.cardno
         };
 
-        this.props.savePayment(payment);
-        setTimeout(() => {
-            if(this.props.paymentObject.payment != null) {
-                this.setState({"show":true, "method":"post"});
-                setTimeout(() => this.setState({"show":false}), 3000);
-            } else {
-                this.setState({"show":false});
-            }
-        }, 2000);
-        this.setState(this.initialState);
-    };
+        axios.post("http://localhost:8081/rest/payments", payment)
+            .then(response => {
+                if(response.data != null){
+                    this.setState({"show":true, "method":"post"});
+                    setTimeout(() => this.setState({"show":false}),3000);
+                } else {
+                    this.setState({"show":false});
+                }
+            });
+            this.setState(this.initialState);
+        };
 
     updatePayment = event => {
         event.preventDefault();
 
         const payment = {
-            id: this.state.id,
-            title: this.state.title,
-            author: this.state.author,
-            coverPhotoURL: this.state.coverPhotoURL,
-            isbnNumber: this.state.isbnNumber,
-            price: this.state.price,
-            language: this.state.language,
-            genre: this.state.genre
+                    id: this.state.id,
+                    nameOnTheCard: this.state.nameOnTheCard,
+                    cvv: this.state.cvv,
+                    expiryDate: this.state.expiryDate,
+                    cardno: this.state.cardno
         };
-        this.props.updatePayment(payment);
-        setTimeout(() => {
-            if(this.props.paymentObject.payment != null) {
+        axios.put("http://localhost:8081/rest/payments", payment)
+        .then(response => {
+            if(response.data != null) {
                 this.setState({"show":true, "method":"put"});
                 setTimeout(() => this.setState({"show":false}), 3000);
+                setTimeout(() => this.paymentList(), 3000);
             } else {
                 this.setState({"show":false});
             }
-        }, 2000);
-        this.setState(this.initialState);
-    };
+        });
+
+    this.setState(this.initialState);
+};
+        
 
     paymentChange = event => {
         this.setState({
@@ -144,11 +110,11 @@ class Payment extends Component {
     };
 
     paymentList = () => {
-        return this.props.history.push("/list");
+        return this.props.history.push("/listPayment");
     };
 
     render() {
-        const {title, author, coverPhotoURL, isbnNumber, price, language, genre} = this.state;
+        const {nameOnTheCard, cvv, expiryDate, cardno} = this.state;
 
         return (
             <div>
@@ -162,77 +128,59 @@ class Payment extends Component {
                     <Form onReset={this.resetPayment} onSubmit={this.state.id ? this.updatePayment : this.submitPayment} id="paymentFormId">
                         <Card.Body>
                             <Form.Row>
-                            
-                                <Form.Group as={Col} controlId="formGridTitle">
-                                    <Form.Label> Name On The Card</Form.Label>
+                            <Form.Group as={Col} controlId="formGridTitle">
+                                    <Form.Label>NameOnTheCard</Form.Label>
                                     <Form.Control required autoComplete="off"
-                                        type="test" name="title"
-                                        value={title} onChange={this.paymentChange}
+                                        type="test" name="nameOnTheCard"
+                                        value={nameOnTheCard} onChange={this.paymentChange}
                                         className={"bg-dark text-white"}
-                                        placeholder="Enter the name on the card" />
+                                        placeholder="Enter Name On The Card" />
+                                </Form.Group>
+                                <Form.Group as={Col} controlId="formGridTitle">
+                                    <Form.Label>Cvv</Form.Label>
+                                    <Form.Control required autoComplete="off"
+                                        type="test" name="cvv"
+                                        value={cvv} onChange={this.paymentChange}
+                                        className={"bg-dark text-white"}
+                                        placeholder="Enter Cvv Number" />
                                 </Form.Group>
                                 <Form.Group as={Col} controlId="formGridAuthor">
-                                    <Form.Label>Card Number</Form.Label>
+                                    <Form.Label>Expiry Date</Form.Label>
                                     <Form.Control required autoComplete="off"
-                                        type="test" name="author"
-                                        value={author} onChange={this.paymentChange}
+                                        type="test" name="expiryDate"
+                                        value={expiryDate} onChange={this.paymentChange}
                                         className={"bg-dark text-white"}
-                                        placeholder="Enter the card number" />
+                                        placeholder="Enter Expiry Date" />
                                 </Form.Group>
                             </Form.Row>
                             <Form.Row>
                                 
                                 <Form.Group as={Col} controlId="formGridISBNNumber">
-                                    <Form.Label>CVV Number</Form.Label>
+                                    <Form.Label>Card Number</Form.Label>
                                     <Form.Control required autoComplete="off"
-                                        type="test" name="isbnNumber"
-                                        value={isbnNumber} onChange={this.paymentChange}
+                                        type="test" name="cardno"
+                                        value={cardno} onChange={this.paymentChange}
                                         className={"bg-dark text-white"}
-                                        placeholder="Enter the CVV Number" />
-                                </Form.Group>
-                            
-                                <Form.Group as={Col} controlId="formGridPrice">
-                                    <Form.Label>Expiry Date</Form.Label>
-                                    <Form.Control required autoComplete="off"
-                                        type="test" name="price"
-                                        value={price} onChange={this.paymentChange}
-                                        className={"bg-dark text-white"}
-                                        placeholder="Enter the Expiry data" />
+                                        placeholder="Enter Card Number" />
                                 </Form.Group>
                                 </Form.Row>
-                               
-                        </Card.Body>
+                            
+                       </Card.Body>
                         <Card.Footer style={{"textAlign":"right"}}>
                             <Button size="sm" variant="success" type="submit">
-                                <FontAwesomeIcon icon={faSave} /> {this.state.id ? "Update" : "Submit"}
+                                <FontAwesomeIcon icon={faSave} /> {this.state.id ? "Update" : "Payment"}
                             </Button>{' '}
-                            {/* <Button size="sm" variant="info" type="reset">
+                            <Button size="sm" variant="info" type="reset">
                                 <FontAwesomeIcon icon={faUndo} /> Reset
                             </Button>{' '}
                             <Button size="sm" variant="info" type="button" onClick={this.paymentList.bind()}>
-                                <FontAwesomeIcon icon={faList} /> Update List
-                            </Button> */}
+                                <FontAwesomeIcon icon={faList} /> Payment List
+                            </Button>
                         </Card.Footer>
                     </Form>
                 </Card>
             </div>
         );
     }
-};
+}
 
-const mapStateToProps = state => {
-    return {
-        paymentObject: state.payment
-    };
-};
-const mapDispatchToProps = dispatch => {
-    return {
-        savePayment: (payment) => dispatch(savePayment(payment)),
-        fetchPayment: (paymentId) => dispatch(fetchPayment(paymentId)),
-        updatePayment: (payment) => dispatch(updatePayment(payment)),
-        fetchLanguages: () => dispatch(fetchLanguages()),
-        fetchGenres: () => dispatch(fetchGenres())
-    };
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(Payment);

@@ -1,47 +1,48 @@
-import * as AT from './authTypes';
-import axios from 'axios';
+import {LOGIN_REQUEST , LOGOUT_REQUEST, SUCCESS , FAILURE} from './authTypes';
 
 export const authenticateUser = (email, password) => {
-    const credentials = {
-        email: email,
-        password: password
-    };
-    return dispatch => {
-        dispatch({
-            type: AT.LOGIN_REQUEST
-        });
-        axios.post("http://localhost:8081/rest/user/authenticate", credentials)
-            .then(response => {
-                let token = response.data.token;
-                localStorage.setItem('jwtToken', token);
-                dispatch(success(true));
-            })
-            .catch(error => {
-                dispatch(failure());
-            });
+ 
+    return dispatch=>{
+        dispatch(loginRequest());
+        if(email ==="admin" && password ==="admin"){
+            dispatch(success());
+        }
+        else{
+            dispatch(failure());
+        }
+
     };
 };
-
-export const logoutUser = () => {
-    return dispatch => {
-        dispatch({
-            type: AT.LOGOUT_REQUEST
-        });
-        localStorage.removeItem('jwtToken');
-        dispatch(success(false));
+const loginRequest=()=>{
+    return{
+        type:LOGIN_REQUEST
     };
 };
-
-const success = isLoggedIn => {
+const success = ()=> {
     return {
-        type: AT.SUCCESS,
-        payload: isLoggedIn
+        type:SUCCESS,
+        payload:true
     };
 };
 
 const failure = () => {
     return {
-        type: AT.FAILURE,
+        type:FAILURE,
         payload: false
     };
 };
+
+export const logoutUser = () => {
+    return dispatch => {
+       
+            dispatch(logoutRequest());
+            dispatch(success());
+    };
+        
+};
+const logoutRequest=()=>{
+    return{
+        type:LOGOUT_REQUEST
+    }
+}
+
