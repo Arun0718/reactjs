@@ -6,12 +6,12 @@ import {Link} from 'react-router-dom';
 import MyToast from '../MyToast';
 import axios from 'axios';
 
-export default class SweetList extends Component {
+export default class CustomerList extends Component {
 
     constructor(props) {
         super(props);
         this.state = {
-            sweets : []
+            customers : []
             
         };
     }
@@ -19,27 +19,27 @@ export default class SweetList extends Component {
 
 
     componentDidMount() {
-        this.findAllSweets();
+        this.findAllCustomers();
     }
 
-    findAllSweets(){
-        axios.get("http://localhost:8081/rest/sweets")
+    findAllCustomers(){
+        axios.get("http://localhost:8081/rest/customers")
             .then(response => response.data)
             .then((data) => {
-                this.setState({sweets: data});
+                this.setState({customers: data});
             });
     };
 
    
 
-    deleteSweet = (sweetId) => {
-        axios.delete("http://localhost:8081/rest/sweets/"+sweetId)
+    deleteCustomer = (customerId) => {
+        axios.delete("http://localhost:8081/rest/customers/"+customerId)
         .then(response => {
             if(response.data != null) {
                 this.setState({"show":true});
                 setTimeout(() => this.setState({"show":false}),3000);
                 this.setState({
-                    sweets:this.state.sweets.filter(sweet => sweet.id !== sweetId)
+                    customers:this.state.customers.filter(customer => customer.id !== customerId)
                 });
             } else {
                 this.setState({"show":false});
@@ -54,45 +54,44 @@ export default class SweetList extends Component {
         return (
            <div>
                 <div style={{"display":this.state.show ? "block" : "none"}}>
-                   <MyToast show = {this.state.show} message = {"Sweet Deleted Successfully."} type = {"danger"}/>
+                   <MyToast show = {this.state.show} message = {"Customer Deleted Successfully."} type = {"danger"}/>
                 </div>
                 <Card className={"border border-dark bg-dark text-white"}>
                     <Card.Header>
                         
-                            <FontAwesomeIcon icon={faList} /> Sweet List
+                            <FontAwesomeIcon icon={faList} /> Customer List
                      </Card.Header>
                  
                     <Card.Body>
                         <Table bordered hover striped variant="dark">
                             <thead>
                                 <tr>
-                                  <th>Category Name</th>
-                                  <th>Product Name</th>
+                                  <th>Email</th>
+                                  <th>Name</th>
                                  
-                                  <th> Product Rate </th>
-                                  <th>Offer Name</th>
-                                  <th>Offer Rate</th>
+                                  <th> Password </th>
+                                  <th>Contact</th>
+                                  
                                   <th>Actions</th>
                                 </tr>
                               </thead>
                               <tbody>
                                 {
-                                   this.state. sweets.length === 0 ?
+                                   this.state. customers.length === 0 ?
                                     <tr align="center">
-                                      <td colSpan="6">No Sweets Available.</td>
+                                      <td colSpan="6">No Customers Available.</td>
                                     </tr> :
-                                   this.state.sweets.map((sweet) => (
-                                    <tr key={sweet.id}>
+                                   this.state.customers.map((customer) => (
+                                    <tr key={customer.id}>
+                                        <td>{customer.email}</td>
+                                        <td>{customer.name}</td>
+                                        <td>{customer.passwrod}</td>
+                                        <td>{customer.contact}</td>
                                         
-                                        <td>{sweet.categoryName}</td>
-                                        <td>{sweet.productName}</td>
-                                        <td>{sweet.rate}</td>
-                                        <td>{sweet.offerName}</td>
-                                        <td>{sweet.offerRate}</td>
                                         <td>
                                             <ButtonGroup>
-                                                <Link to={"editSweet/"+sweet.id} className="btn btn-sm btn-outline-primary"><FontAwesomeIcon icon={faEdit} /></Link>{' '}
-                                                <Button size="sm" variant="outline-danger" onClick={this.deleteSweet.bind(this, sweet.id)}><FontAwesomeIcon icon={faTrash} /></Button>
+                                                <Link to={"editCustomer/"+customer.id} className="btn btn-sm btn-outline-primary"><FontAwesomeIcon icon={faEdit} /></Link>{' '}
+                                                <Button size="sm" variant="outline-danger" onClick={this.deleteCustomer.bind(this, customer.id)}><FontAwesomeIcon icon={faTrash} /></Button>
                                             </ButtonGroup>
                                         </td>
                                     </tr>
@@ -101,10 +100,6 @@ export default class SweetList extends Component {
                               </tbody>
                         </Table>
                     </Card.Body>
-                    <Card.Footer style={{"textAlign":"right"}}>
-                    <Link to={"addOrder"} className="nav-link">Proceed to Order</Link>
-
-                    </Card.Footer>
                    
                 </Card>
             </div>

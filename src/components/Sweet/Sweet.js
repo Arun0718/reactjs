@@ -1,28 +1,25 @@
 import React,{Component} from 'react';
 
-import {connect} from 'react-redux';
-import {saveSweet,fetchSweet,updateSweet,fetchLanguages,fetchGenres} from '../../services/index';
-import {Card, Form, Button, Col, InputGroup, Image} from 'react-bootstrap';
+
+import {Card, Form, Button, Col } from 'react-bootstrap';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faSave, faPlusSquare, faUndo, faList, faEdit} from '@fortawesome/free-solid-svg-icons';
 import MyToast from '../MyToast';
+import axios from 'axios';
 
-class Sweet extends Component {
+
+export default class Sweet extends Component {
 
     constructor(props) {
         super(props);
         this.state = this.initialState;
-        this.state = {
-            genres: [],
-            languages : [],
-            show : false
-        };
+        this.state.show = false;
         this.sweetChange = this.sweetChange.bind(this);
         this.submitSweet = this.submitSweet.bind(this);
     }
 
     initialState = {
-        id:'', title:'', author:'', coverPhotoURL:'', isbnNumber:'', price:'', language:'', genre:''
+        id:'', categoryName:'', productName:'', rate:'', offerName:'', offerRate:''
     };
 
     componentDidMount() {
@@ -30,58 +27,29 @@ class Sweet extends Component {
         if(sweetId) {
             this.findSweetById(sweetId);
         }
-        this.findAllLanguages();
+       
     }
 
-    findAllLanguages = () => {
-        this.props.fetchLanguages();
-        setTimeout(() => {
-            let sweetLanguages = this.props.sweetObject.languages;
-            if(sweetLanguages) {
-                this.setState({
-                    languages: [{value:'', display:'Select Language'}]
-                        .concat(sweetLanguages.map(language => {
-                            return {value:language, display:language}
-                        }))
-                });
-                this.findAllGenres();
-            }
-        }, 100);
-    };
-
-    findAllGenres = () => {
-        this.props.fetchGenres();
-        setTimeout(() => {
-            let sweetGenres = this.props.sweetObject.genres;
-            if(sweetGenres) {
-                this.setState({
-                    genres: [{value:'', display:'Select Genre'}]
-                        .concat(sweetGenres.map(genre => {
-                            return {value:genre, display:genre}
-                        }))
-                });
-            }
-        }, 100);
-    };
+   
 
     findSweetById = (sweetId) => {
-        this.props.fetchBook(sweetId);
-        setTimeout(() => {
-            let sweet = this.props.sweetObject.sweet;
-            if(sweet != null) {
+        axios.get("http://localhost:8081/rest/sweets/"+sweetId)
+        .then(response => {
+            if(response.data != null){
                 this.setState({
-                    id: sweet.id,
-                    title: sweet.title,
-                    author: sweet.author,
-                    coverPhotoURL: sweet.coverPhotoURL,
-                    isbnNumber: sweet.isbnNumber,
-                    price: sweet.price,
-                    language: sweet.language,
-                    genre: sweet.genre
-                });
-            }
-        }, 1000);
-    };
+                    id: response.data.id,
+                    categoryName: response.data.categoryName,
+                    productName: response.data.productName,
+                    rate: response.data.rate,
+                    offerName: response.data.offerName,
+                    offerRate: response.data.offerRate
+            });
+        }
+    }).catch((error) => {
+        console.error("Error -"+error);
+    });
+};
+        
 
     resetSweet = () => {
         this.setState(() => this.initialState);
@@ -91,51 +59,51 @@ class Sweet extends Component {
         event.preventDefault();
 
         const sweet = {
-            title: this.state.title,
-            author: this.state.author,
-            coverPhotoURL: this.state.coverPhotoURL,
-            isbnNumber: this.state.isbnNumber,
-            price: this.state.price,
-            language: this.state.language,
-            genre: this.state.genre
+            
+                    categoryName: this.state.categoryName,
+                    productName: this.state.productName,
+                    rate: this.state.rate,
+                    offerName: this.state.offerName,
+                    offerRate: this.state.offerRate
         };
 
-        this.props.saveSweet(sweet);
-        setTimeout(() => {
-            if(this.props.sweetObject.sweet != null) {
-                this.setState({"show":true, "method":"post"});
-                setTimeout(() => this.setState({"show":false}), 3000);
-            } else {
-                this.setState({"show":false});
-            }
-        }, 2000);
-        this.setState(this.initialState);
-    };
+        axios.post("http://localhost:8081/rest/sweets", sweet)
+            .then(response => {
+                if(response.data != null){
+                    this.setState({"show":true, "method":"post"});
+                    setTimeout(() => this.setState({"show":false}),3000);
+                } else {
+                    this.setState({"show":false});
+                }
+            });
+            this.setState(this.initialState);
+        };
 
     updateSweet = event => {
         event.preventDefault();
 
         const sweet = {
-            id: this.state.id,
-            title: this.state.title,
-            author: this.state.author,
-            coverPhotoURL: this.state.coverPhotoURL,
-            isbnNumber: this.state.isbnNumber,
-            price: this.state.price,
-            language: this.state.language,
-            genre: this.state.genre
+                    id: this.state.id,
+                    categoryName: this.state.categoryName,
+                    productName: this.state.productName,
+                    rate: this.state.rate,
+                    offerName: this.state.offerName,
+                    offerRate: this.state.offerRate
         };
-        this.props.updateSweet(sweet);
-        setTimeout(() => {
-            if(this.props.sweetObject.sweet != null) {
+        axios.put("http://localhost:8081/rest/sweets", sweet)
+        .then(response => {
+            if(response.data != null) {
                 this.setState({"show":true, "method":"put"});
                 setTimeout(() => this.setState({"show":false}), 3000);
+                setTimeout(() => this.sweetList(), 3000);
             } else {
                 this.setState({"show":false});
             }
-        }, 2000);
-        this.setState(this.initialState);
-    };
+        });
+
+    this.setState(this.initialState);
+};
+        
 
     sweetChange = event => {
         this.setState({
@@ -144,11 +112,11 @@ class Sweet extends Component {
     };
 
     sweetList = () => {
-        return this.props.history.push("/list");
+        return this.props.history.push("/listSweet");
     };
 
     render() {
-        const {title, author, coverPhotoURL, isbnNumber, price, language, genre} = this.state;
+        const {categoryName, productName, rate, offerName, offerRate} = this.state;
 
         return (
             <div>
@@ -162,32 +130,27 @@ class Sweet extends Component {
                     <Form onReset={this.resetSweet} onSubmit={this.state.id ? this.updateSweet : this.submitSweet} id="sweetFormId">
                         <Card.Body>
                             <Form.Row>
-                            <Form.Group as={Col} controlId="formGridLanguage">
-                                    <Form.Label>Category Name</Form.Label>
-                                    <Form.Control required as="select"
-                                        custom onChange={this.sweetChange}
-                                        name="language" value={language}
-                                        className={"bg-dark text-white"}>
-                                        {this.state.languages.map(language =>
-                                            <option key={language.value} value={language.value}>
-                                                {language.display}
-                                            </option>
-                                        )}
-                                    </Form.Control>
+                            <Form.Group as={Col} controlId="formGridTitle">
+                                    <Form.Label>category Name</Form.Label>
+                                    <Form.Control required autoComplete="off"
+                                        type="test" name="categoryName"
+                                        value={categoryName} onChange={this.sweetChange}
+                                        className={"bg-dark text-white"}
+                                        placeholder="Enter category Name" />
                                 </Form.Group>
                                 <Form.Group as={Col} controlId="formGridTitle">
                                     <Form.Label>Product Name</Form.Label>
                                     <Form.Control required autoComplete="off"
-                                        type="test" name="title"
-                                        value={title} onChange={this.sweetChange}
+                                        type="test" name="productName"
+                                        value={productName} onChange={this.sweetChange}
                                         className={"bg-dark text-white"}
                                         placeholder="Enter Product Name" />
                                 </Form.Group>
                                 <Form.Group as={Col} controlId="formGridAuthor">
                                     <Form.Label>Product Rate</Form.Label>
                                     <Form.Control required autoComplete="off"
-                                        type="test" name="author"
-                                        value={author} onChange={this.sweetChange}
+                                        type="test" name="rate"
+                                        value={rate} onChange={this.sweetChange}
                                         className={"bg-dark text-white"}
                                         placeholder="Enter Product Rate" />
                                 </Form.Group>
@@ -197,19 +160,19 @@ class Sweet extends Component {
                                 <Form.Group as={Col} controlId="formGridISBNNumber">
                                     <Form.Label>Offer Name</Form.Label>
                                     <Form.Control required autoComplete="off"
-                                        type="test" name="isbnNumber"
-                                        value={isbnNumber} onChange={this.sweetChange}
+                                        type="test" name="offerName"
+                                        value={offerName} onChange={this.sweetChange}
                                         className={"bg-dark text-white"}
                                         placeholder="Enter Offer Name" />
                                 </Form.Group>
                             
                                 <Form.Group as={Col} controlId="formGridPrice">
-                                    <Form.Label>Offer Price</Form.Label>
+                                    <Form.Label>Offer Rate</Form.Label>
                                     <Form.Control required autoComplete="off"
-                                        type="test" name="price"
-                                        value={price} onChange={this.sweetChange}
+                                        type="test" name="offerRate"
+                                        value={offerRate} onChange={this.sweetChange}
                                         className={"bg-dark text-white"}
-                                        placeholder="Enter Offer Price" />
+                                        placeholder="Enter Offer Rate" />
                                 </Form.Group>
                                 </Form.Row>
                                
@@ -230,21 +193,4 @@ class Sweet extends Component {
             </div>
         );
     }
-};
-
-const mapStateToProps = state => {
-    return {
-        sweetObject: state.sweet
-    };
-};
-const mapDispatchToProps = dispatch => {
-    return {
-        saveSweet: (sweet) => dispatch(saveSweet(sweet)),
-        fetchSweet: (sweetId) => dispatch(fetchSweet(sweetId)),
-        updateSweet: (sweet) => dispatch(updateSweet(sweet)),
-        fetchLanguages: () => dispatch(fetchLanguages()),
-        fetchGenres: () => dispatch(fetchGenres())
-    };
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(Sweet);
+}

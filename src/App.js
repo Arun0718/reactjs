@@ -14,14 +14,20 @@ import Order from './components/Order/Order';
 import OrderList from './components/Order/OrderList';
 import Branch from './components/Branch/Branch';
 import BranchList from './components/Branch/BranchList';
-import Register from './components/User/Register';
+import Customer from './components/Customer/Customer';
+import CustomerList from './components/Customer/CustomerList';
 import Login from './components/User/Login';
+
+
 import Footer from './components/Footer';
+
+
+
 
 export default function App() {
 
   const heading = "Welcome to CG Cassendra";
-  const quote = "Life is short, and it is up to you to make it sweet...";
+  const quote = "You Are What You Eat , So Eat Something Sweet";
   const footer = "";
 
   return (
@@ -33,11 +39,10 @@ export default function App() {
                     <Switch>
                         <Route path="/" exact component={() => <Welcome heading={heading} quote={quote} footer={footer}/>}/>
                      
-                        <Route path="/register" exact component={Register}/>
                         <Route path="/login" exact component={Login}/>
+                        <Route path="/logout" exact component={Login}/>
                        
-                    
-
+                       
                         <Route path="/addSweet" exact component={Sweet}/>
                         <Route path="/editSweet/:id" exact component={Sweet}/>
                         <Route path="/listSweet" exact component={SweetList}/>
@@ -53,6 +58,10 @@ export default function App() {
                         <Route path="/addBranch" exact component={Branch}/>
                         <Route path="/editBranch/:id" exact component={Branch}/>
                         <Route path="/listBranch" exact component={BranchList}/>
+
+                        <Route path="/addCustomer" exact component={Customer}/>
+                        <Route path="/editCustomer/:id" exact component={Customer}/>
+                        <Route path="/listCustomer" exact component={CustomerList}/>
                         
 
                     </Switch>

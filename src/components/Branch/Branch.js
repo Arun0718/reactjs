@@ -1,28 +1,23 @@
 import React,{Component} from 'react';
-
-import {connect} from 'react-redux';
-import {saveBranch,fetchBranch,updateBranch,fetchLanguages,fetchGenres} from '../../services/index';
-import {Card, Form, Button, Col, InputGroup, Image} from 'react-bootstrap';
+import {Card, Form, Button, Col } from 'react-bootstrap';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faSave, faPlusSquare, faUndo, faList, faEdit} from '@fortawesome/free-solid-svg-icons';
 import MyToast from '../MyToast';
+import axios from 'axios';
 
-class Branch extends Component {
+
+export default class Branch extends Component {
 
     constructor(props) {
         super(props);
         this.state = this.initialState;
-        this.state = {
-            genres: [],
-            languages : [],
-            show : false
-        };
+        this.state.show = false;
         this.branchChange = this.branchChange.bind(this);
         this.submitBranch = this.submitBranch.bind(this);
     }
 
     initialState = {
-        id:'', title:'', author:'', coverPhotoURL:'', isbnNumber:'', price:'', language:'', genre:''
+        id:'', branchCity:'', branchState:''
     };
 
     componentDidMount() {
@@ -30,58 +25,27 @@ class Branch extends Component {
         if(branchId) {
             this.findBranchById(branchId);
         }
-       // this.findAllLanguages();
+       
     }
 
-    // findAllLanguages = () => {
-    //     this.props.fetchLanguages();
-    //     setTimeout(() => {
-    //         let branchLanguages = this.props.branchObject.languages;
-    //         if(branchLanguages) {
-    //             this.setState({
-    //                 languages: [{value:'', display:'Select Language'}]
-    //                     .concat(branchLanguages.map(language => {
-    //                         return {value:language, display:language}
-    //                     }))
-    //             });
-    //             this.findAllGenres();
-    //         }
-    //     }, 100);
-    // };
-
-    findAllGenres = () => {
-        this.props.fetchGenres();
-        setTimeout(() => {
-            let branchGenres = this.props.branchObject.genres;
-            if(branchGenres) {
-                this.setState({
-                    genres: [{value:'', display:'Select Genre'}]
-                        .concat(branchGenres.map(genre => {
-                            return {value:genre, display:genre}
-                        }))
-                });
-            }
-        }, 100);
-    };
+   
 
     findBranchById = (branchId) => {
-        this.props.fetchBook(branchId);
-        setTimeout(() => {
-            let branch = this.props.branchObject.branch;
-            if(branch != null) {
+        axios.get("http://localhost:8081/rest/branches/"+branchId)
+        .then(response => {
+            if(response.data != null){
                 this.setState({
-                    id: branch.id,
-                    title: branch.title,
-                    author: branch.author,
-                    coverPhotoURL: branch.coverPhotoURL,
-                    isbnNumber: branch.isbnNumber,
-                    price: branch.price,
-                    language: branch.language,
-                    genre: branch.genre
-                });
-            }
-        }, 1000);
-    };
+                    id: response.data.id,
+                    branchCity: response.data.branchCity,
+                    branchState: response.data.branchState,
+                   
+            });
+        }
+    }).catch((error) => {
+        console.error("Error -"+error);
+    });
+};
+        
 
     resetBranch = () => {
         this.setState(() => this.initialState);
@@ -91,51 +55,47 @@ class Branch extends Component {
         event.preventDefault();
 
         const branch = {
-            title: this.state.title,
-            author: this.state.author,
-            coverPhotoURL: this.state.coverPhotoURL,
-            isbnNumber: this.state.isbnNumber,
-            price: this.state.price,
-            language: this.state.language,
-            genre: this.state.genre
+            
+                    branchCity: this.state.branchCity,
+                    branchState: this.state.branchState,
+                    
         };
 
-        this.props.saveBranch(branch);
-        setTimeout(() => {
-            if(this.props.branchObject.branch != null) {
-                this.setState({"show":true, "method":"post"});
-                setTimeout(() => this.setState({"show":false}), 3000);
-            } else {
-                this.setState({"show":false});
-            }
-        }, 2000);
-        this.setState(this.initialState);
-    };
+        axios.post("http://localhost:8081/rest/branches", branch)
+            .then(response => {
+                if(response.data != null){
+                    this.setState({"show":true, "method":"post"});
+                    setTimeout(() => this.setState({"show":false}),3000);
+                } else {
+                    this.setState({"show":false});
+                }
+            });
+            this.setState(this.initialState);
+        };
 
     updateBranch = event => {
         event.preventDefault();
 
         const branch = {
-            id: this.state.id,
-            title: this.state.title,
-            author: this.state.author,
-            coverPhotoURL: this.state.coverPhotoURL,
-            isbnNumber: this.state.isbnNumber,
-            price: this.state.price,
-            language: this.state.language,
-            genre: this.state.genre
+                    id: this.state.id,
+                    branchcity: this.state.branchCity,
+                    branchState: this.state.branchState,
+                  
         };
-        this.props.updateBranch(branch);
-        setTimeout(() => {
-            if(this.props.branchObject.branch != null) {
+        axios.put("http://localhost:8081/rest/branches", branch)
+        .then(response => {
+            if(response.data != null) {
                 this.setState({"show":true, "method":"put"});
                 setTimeout(() => this.setState({"show":false}), 3000);
+                setTimeout(() => this.branchList(), 3000);
             } else {
                 this.setState({"show":false});
             }
-        }, 2000);
-        this.setState(this.initialState);
-    };
+        });
+
+    this.setState(this.initialState);
+};
+        
 
     branchChange = event => {
         this.setState({
@@ -144,11 +104,11 @@ class Branch extends Component {
     };
 
     branchList = () => {
-        return this.props.history.push("/list");
+        return this.props.history.push("/listBranch");
     };
 
     render() {
-        const {title, author, coverPhotoURL, isbnNumber, price, language, genre} = this.state;
+        const {branchCity, branchState} = this.state;
 
         return (
             <div>
@@ -162,26 +122,25 @@ class Branch extends Component {
                     <Form onReset={this.resetBranch} onSubmit={this.state.id ? this.updateBranch : this.submitBranch} id="branchFormId">
                         <Card.Body>
                             <Form.Row>
-                           
-                                <Form.Group as={Col} controlId="formGridTitle">
+                            <Form.Group as={Col} controlId="formGridTitle">
                                     <Form.Label>Branch City</Form.Label>
                                     <Form.Control required autoComplete="off"
-                                        type="test" name="title"
-                                        value={title} onChange={this.branchChange}
+                                        type="test" name="branchCity"
+                                        value={branchCity} onChange={this.branchChange}
                                         className={"bg-dark text-white"}
-                                        placeholder="Enter the branch city" />
+                                        placeholder="Enter Branch City" />
                                 </Form.Group>
-                                <Form.Group as={Col} controlId="formGridAuthor">
+                                <Form.Group as={Col} controlId="formGridTitle">
                                     <Form.Label>Branch State</Form.Label>
                                     <Form.Control required autoComplete="off"
-                                        type="test" name="author"
-                                        value={author} onChange={this.branchChange}
+                                        type="test" name="branchState"
+                                        value={branchState} onChange={this.branchChange}
                                         className={"bg-dark text-white"}
-                                        placeholder="Enter the branch state" />
+                                        placeholder="Enter Branch State" />
                                 </Form.Group>
+                                
                             </Form.Row>
-                            
-                               
+                           
                         </Card.Body>
                         <Card.Footer style={{"textAlign":"right"}}>
                             <Button size="sm" variant="success" type="submit">
@@ -199,21 +158,4 @@ class Branch extends Component {
             </div>
         );
     }
-};
-
-const mapStateToProps = state => {
-    return {
-        branchObject: state.branch
-    };
-};
-const mapDispatchToProps = dispatch => {
-    return {
-        saveBranch: (branch) => dispatch(saveBranch(branch)),
-        fetchBranch: (branchId) => dispatch(fetchBranch(branchId)),
-        updateBranch: (branch) => dispatch(updateBranch(branch)),
-        fetchLanguages: () => dispatch(fetchLanguages()),
-        fetchGenres: () => dispatch(fetchGenres())
-    };
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(Branch);
+}
