@@ -160,10 +160,5 @@ export default class Branch extends Component {
     }
 }
 
-//Hello I have committed
 
-
-//Pranesh Committed again
-
-//Dheena committed AGAIN.....
 
