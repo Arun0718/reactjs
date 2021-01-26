@@ -6,12 +6,12 @@ import {Link} from 'react-router-dom';
 import MyToast from '../MyToast';
 import axios from 'axios';
 
-export default class OrderList extends Component {
+export default class FeedbackList extends Component {
 
     constructor(props) {
         super(props);
         this.state = {
-            orders : []
+            feedbacks : []
             
         };
     }
@@ -19,27 +19,27 @@ export default class OrderList extends Component {
 
 
     componentDidMount() {
-        this.findAllOrders();
+        this.findAllFeedbacks();
     }
 
-    findAllOrders(){
-        axios.get("http://localhost:8084/api/v1/orders")
+    findAllFeedbacks(){
+        axios.get("http://localhost:8084/api/v1/feedbacks")
             .then(response => response.data)
             .then((data) => {
-                this.setState({orders: data});
+                this.setState({feedbacks: data});
             });
     };
 
    
 
-    deleteOrder = (orderId) => {
-        axios.delete("http://localhost:8084/api/v1/orders/"+orderId)
+    deleteFeedback = (orderId) => {
+        axios.delete("http://localhost:8084/api/v1/feedbacks/"+orderId)
         .then(response => {
             if(response.data != null) {
                 this.setState({"show":true});
                 setTimeout(() => this.setState({"show":false}),3000);
                 this.setState({
-                    orders:this.state.orders.filter(order => order.id !== orderId)
+                    feedbacks:this.state.feedbacks.filter(feedback => feedback.id !== orderId)
                 });
             } else {
                 this.setState({"show":false});
@@ -60,20 +60,21 @@ export default class OrderList extends Component {
         return (
            <div>
                 <div style={{"display":this.state.show ? "block" : "none"}}>
-                   <MyToast show = {this.state.show} message = {"Order Deleted Successfully."} type = {"danger"}/>
+                   <MyToast show = {this.state.show} message = {"Feedback Deleted Successfully."} type = {"danger"}/>
                 </div>
                 <Card className={"border border-dark bg-dark text-white"}>
                     <Card.Header>
                         
-                            <FontAwesomeIcon icon={faList} /> Order List
+                            <FontAwesomeIcon icon={faList} /> Feedback List
                      </Card.Header>
                  
                     <Card.Body>
                         <Table bordered hover striped variant="dark">
                             <thead>
                                 <tr>
-                                  <th>Quantity</th>
-                                  <th>Delivery Address</th>
+                                  <th>User Name</th>
+                                  <th>Product Name</th>
+				  <th>Feedback</th>
                                  
                                   
                                   <th>Actions</th>
@@ -81,20 +82,21 @@ export default class OrderList extends Component {
                               </thead>
                               <tbody>
                                 {
-                                   this.state. orders.length === 0 ?
+                                   this.state. feedbacks.length === 0 ?
                                     <tr align="center">
-                                      <td colSpan="6">No Orders Available.</td>
+                                      <td colSpan="6">No Feedbacks Available.</td>
                                     </tr> :
-                                   this.state.orders.map((order) => (
-                                    <tr key={order.id}>
+                                   this.state.feedbacks.map((feedback) => (
+                                    <tr key={feedback.id}>
                                         
-                                        <td>{order.quantity}</td>
-                                        <td>{order.deliveryAddress}</td>
+                                        <td>{feedback.UserName}</td>
+                                        <td>{feedback.ProductName}</td>
+					<td>{feedback.Feedback}</td>
                                        
                                         <td>
                                             <ButtonGroup>
-                                                <Link to={"editOrder/"+order.id} className="btn btn-sm btn-outline-primary"><FontAwesomeIcon icon={faEdit} /></Link>{' '}
-                                                <Button size="sm" variant="outline-danger" onClick={this.deleteOrder.bind(this, order.id)}><FontAwesomeIcon icon={faTrash} /></Button>
+                                                <Link to={"editFeedback/"+feedback.id} className="btn btn-sm btn-outline-primary"><FontAwesomeIcon icon={faEdit} /></Link>{' '}
+                                                <Button size="sm" variant="outline-danger" onClick={this.deleteFeedback.bind(this, feedback.id)}><FontAwesomeIcon icon={faTrash} /></Button>
                                             </ButtonGroup>
                                         </td>
                                     </tr>

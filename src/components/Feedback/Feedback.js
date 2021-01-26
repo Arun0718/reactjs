@@ -8,38 +8,39 @@ import MyToast from '../MyToast';
 import axios from 'axios';
 
 
-export default class Order extends Component {
+export default class Feedback extends Component {
 
     constructor(props) {
         super(props);
         this.state = this.initialState;
         this.state.show = false;
-        this.orderChange = this.orderChange.bind(this);
-        this.submitOrder = this.submitOrder.bind(this);
+        this.feedbackChange = this.feedbackChange.bind(this);
+        this.submitFeedback = this.submitFeedback.bind(this);
     }
 
     initialState = {
-        id:'', quantity:'', deliveryAddress:''
+        id:'', UserName:'', ProductName:'' , Feedback:''
     };
 
     componentDidMount() {
         const orderId = +this.props.match.params.id;
         if(orderId) {
-            this.findOrderById(orderId);
+            this.findFeedbackById(orderId);
         }
        
     }
 
    
 
-    findOrderById = (orderId) => {
-        axios.get("http://localhost:8084/api/v1/orders/"+orderId)
+    findFeedbackById = (orderId) => {
+        axios.get("http://localhost:8084/api/v1/feedbacks/"+orderId)
         .then(response => {
             if(response.data != null){
                 this.setState({
                     id: response.data.id,
-                    quantity: response.data.quantity,
-                    deliveryAddress: response.data.deliveryAddress,
+                    UserName: response.data.UserName,
+                    ProductName: response.data.ProductName,
+		    Feedback: response.data.Feedback,
                    
             });
         }
@@ -49,21 +50,22 @@ export default class Order extends Component {
 };
         
 
-    resetOrder = () => {
+    resetFeedback = () => {
         this.setState(() => this.initialState);
     };
 
-    submitOrder = event => {
+    submitFeedback = event => {
         event.preventDefault();
 
-        const order = {
+        const feedback = {
             
-                    quantity: this.state.quantity,
-                    deliveryAddress: this.state.deliveryAddress,
+                    UserName: this.state.UserName,
+                    ProductName: this.state.ProductName,
+		    Feedback: this.state.Feedback,
                     
         };
 
-        axios.post("http://localhost:8084/api/v1/orders", order)
+        axios.post("http://localhost:8084/api/v1/feedbacks", feedback)
             .then(response => {
                 if(response.data != null){
                     this.setState({"show":true, "method":"post"});
@@ -75,21 +77,22 @@ export default class Order extends Component {
             this.setState(this.initialState);
         };
 
-    updateOrder = event => {
+    updateFeedback = event => {
         event.preventDefault();
 
-        const order = {
+        const feedback = {
                     id: this.state.id,
-                    quantity: this.state.quantity,
-                    deliveryAddress: this.state.deliveryAddress,
+                    UserName: this.state.UserName,
+                    ProductName: this.state.ProductName,
+                    Feedback: this.state.Feedback,
                   
         };
-        axios.put("http://localhost:8084/api/v1/orders", order)
+        axios.put("http://localhost:8084/api/v1/feedbacks", feedback)
         .then(response => {
             if(response.data != null) {
                 this.setState({"show":true, "method":"put"});
                 setTimeout(() => this.setState({"show":false}), 3000);
-                setTimeout(() => this.orderList(), 3000);
+                setTimeout(() => this.feedbackList(), 3000);
             } else {
                 this.setState({"show":false});
             }
@@ -99,48 +102,55 @@ export default class Order extends Component {
 };
         
 
-    orderChange = event => {
+    feedbackChange = event => {
         this.setState({
             [event.target.name]:event.target.value
         });
     };
 
-    orderList = () => {
-        return this.props.history.push("/listOrder");
+    feedbackList = () => {
+        return this.props.history.push("/listFeedback");
     };
 
     render() {
-        const {quantity, deliveryAddress} = this.state;
+        const {UserName, ProductName, Feedback} = this.state;
 
         return (
             <div>
                 <div style={{"display":this.state.show ? "block" : "none"}}>
-                    <MyToast show = {this.state.show} message = {this.state.method === "put" ? "Order Updated Successfully." : "Order Saved Successfully."} type = {"success"}/>
+                    <MyToast show = {this.state.show} message = {this.state.method === "put" ? "Feedback Updated Successfully." : "Feedback Saved Successfully."} type = {"success"}/>
                 </div>
                 <Card className={"border border-dark bg-dark text-white"}>
                     <Card.Header>
-                        <FontAwesomeIcon icon={this.state.id ? faEdit : faPlusSquare} /> {this.state.id ? "Update Order" : "Add New Order"}
+                        <FontAwesomeIcon icon={this.state.id ? faEdit : faPlusSquare} /> {this.state.id ? "Update Feedback" : "Add New Feedback"}
                     </Card.Header>
-                    <Form onReset={this.resetOrder} onSubmit={this.state.id ? this.updateOrder : this.submitOrder} id="orderFormId">
+                    <Form onReset={this.resetFeedback} onSubmit={this.state.id ? this.updateFeedback : this.submitFeedback} id="feedbackFormId">
                         <Card.Body>
                             <Form.Row>
                             <Form.Group as={Col} controlId="formGridTitle">
-                                    <Form.Label>Quantity</Form.Label>
+                                    <Form.Label>User Name</Form.Label>
                                     <Form.Control required autoComplete="off"
-                                        type="test" name="quantity"
-                                        value={quantity} onChange={this.orderChange}
+                                        type="test" name="UserName"
+                                        value={UserName} onChange={this.feedbackChange}
                                         className={"bg-dark text-white"}
-                                        placeholder="Enter quantity" />
+                                        placeholder="Enter UserName" />
                                 </Form.Group>
                                 <Form.Group as={Col} controlId="formGridTitle">
-                                    <Form.Label>Delivery Address</Form.Label>
+                                    <Form.Label>Product Name</Form.Label>
                                     <Form.Control required autoComplete="off"
-                                        type="test" name="deliveryAddress"
-                                        value={deliveryAddress} onChange={this.orderChange}
+                                        type="test" name="ProductName"
+                                        value={ProductName} onChange={this.feedbackChange}
                                         className={"bg-dark text-white"}
-                                        placeholder="Enter Delivery Address" />
+                                        placeholder="Enter Product Name" />
                                 </Form.Group>
-                                
+                                <Form.Group as={Col} controlId="formGridTitle">
+                                    <Form.Label>Feedback</Form.Label>
+                                    <Form.Control required autoComplete="off"
+                                        type="test" name="Feedback"
+                                        value={Feedback} onChange={this.feedbackChange}
+                                        className={"bg-dark text-white"}
+                                        placeholder="Enter Feedback" />
+                                </Form.Group>
                             </Form.Row>
                            
                         </Card.Body>
@@ -151,8 +161,8 @@ export default class Order extends Component {
                             <Button size="sm" variant="info" type="reset">
                                 <FontAwesomeIcon icon={faUndo} /> Reset
                             </Button>{' '}
-                            <Button size="sm" variant="info" type="button" onClick={this.orderList.bind()}>
-                                <FontAwesomeIcon icon={faList} /> Order List
+                            <Button size="sm" variant="info" type="button" onClick={this.feedbackList.bind()}>
+                                <FontAwesomeIcon icon={faList} /> Feedback List
                             </Button>
                         </Card.Footer>
                     </Form>

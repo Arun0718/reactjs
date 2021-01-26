@@ -8,36 +8,37 @@ import MyToast from '../MyToast';
 import axios from 'axios';
 
 
-export default class Order extends Component {
+export default class Event extends Component {
 
     constructor(props) {
         super(props);
         this.state = this.initialState;
         this.state.show = false;
-        this.orderChange = this.orderChange.bind(this);
-        this.submitOrder = this.submitOrder.bind(this);
+        this.eventChange = this.eventChange.bind(this);
+        this.submitEvent = this.submitEvent.bind(this);
     }
 
     initialState = {
-        id:'', quantity:'', deliveryAddress:''
+        id:'', eventName:'', quantity:'', deliveryAddress:''
     };
 
     componentDidMount() {
-        const orderId = +this.props.match.params.id;
-        if(orderId) {
-            this.findOrderById(orderId);
+        const eventId = +this.props.match.params.id;
+        if(eventId) {
+            this.findEventById(eventId);
         }
        
     }
 
    
 
-    findOrderById = (orderId) => {
-        axios.get("http://localhost:8084/api/v1/orders/"+orderId)
+    findEventById = (eventId) => {
+        axios.get("http://localhost:8084/api/v1/events/"+eventId)
         .then(response => {
             if(response.data != null){
                 this.setState({
                     id: response.data.id,
+		    eventName: response.data.eventName,
                     quantity: response.data.quantity,
                     deliveryAddress: response.data.deliveryAddress,
                    
@@ -49,21 +50,21 @@ export default class Order extends Component {
 };
         
 
-    resetOrder = () => {
+    resetEvent = () => {
         this.setState(() => this.initialState);
     };
 
-    submitOrder = event => {
+    submitEvent = event => {
         event.preventDefault();
 
-        const order = {
-            
+        const event = {
+            	    eventName: this.state.eventName,
                     quantity: this.state.quantity,
                     deliveryAddress: this.state.deliveryAddress,
                     
         };
 
-        axios.post("http://localhost:8084/api/v1/orders", order)
+        axios.post("http://localhost:8084/api/v1/events", event)
             .then(response => {
                 if(response.data != null){
                     this.setState({"show":true, "method":"post"});
@@ -75,16 +76,17 @@ export default class Order extends Component {
             this.setState(this.initialState);
         };
 
-    updateOrder = event => {
+    updateEvent = event => {
         event.preventDefault();
 
-        const order = {
+        const event = {
                     id: this.state.id,
+                    eventName: this.state.eventName,
                     quantity: this.state.quantity,
                     deliveryAddress: this.state.deliveryAddress,
                   
         };
-        axios.put("http://localhost:8084/api/v1/orders", order)
+        axios.put("http://localhost:8084/api/v1/events", event)
         .then(response => {
             if(response.data != null) {
                 this.setState({"show":true, "method":"put"});
@@ -99,36 +101,44 @@ export default class Order extends Component {
 };
         
 
-    orderChange = event => {
+    eventChange = event => {
         this.setState({
             [event.target.name]:event.target.value
         });
     };
 
-    orderList = () => {
-        return this.props.history.push("/listOrder");
+    eventList = () => {
+        return this.props.history.push("/listEvent");
     };
 
     render() {
-        const {quantity, deliveryAddress} = this.state;
+        const {eventName,quantity, deliveryAddress} = this.state;
 
         return (
             <div>
                 <div style={{"display":this.state.show ? "block" : "none"}}>
-                    <MyToast show = {this.state.show} message = {this.state.method === "put" ? "Order Updated Successfully." : "Order Saved Successfully."} type = {"success"}/>
+                    <MyToast show = {this.state.show} message = {this.state.method === "put" ? "Event Updated Successfully." : "Event Saved Successfully."} type = {"success"}/>
                 </div>
                 <Card className={"border border-dark bg-dark text-white"}>
                     <Card.Header>
-                        <FontAwesomeIcon icon={this.state.id ? faEdit : faPlusSquare} /> {this.state.id ? "Update Order" : "Add New Order"}
+                        <FontAwesomeIcon icon={this.state.id ? faEdit : faPlusSquare} /> {this.state.id ? "Update Event" : "Add New Event"}
                     </Card.Header>
-                    <Form onReset={this.resetOrder} onSubmit={this.state.id ? this.updateOrder : this.submitOrder} id="orderFormId">
+                    <Form onReset={this.resetEvent} onSubmit={this.state.id ? this.updateEvent : this.submitEvent} id="eventFormId">
                         <Card.Body>
                             <Form.Row>
+			    <Form.Group as={Col} controlId="formGridTitle">
+                                    <Form.Label>Event Name</Form.Label>
+                                    <Form.Control required autoComplete="off"
+                                        type="test" name="eventName"
+                                        value={eventName} onChange={this.eventChange}
+                                        className={"bg-dark text-white"}
+                                        placeholder="Enter the event name" />
+                                </Form.Group>
                             <Form.Group as={Col} controlId="formGridTitle">
                                     <Form.Label>Quantity</Form.Label>
                                     <Form.Control required autoComplete="off"
                                         type="test" name="quantity"
-                                        value={quantity} onChange={this.orderChange}
+                                        value={quantity} onChange={this.eventChange}
                                         className={"bg-dark text-white"}
                                         placeholder="Enter quantity" />
                                 </Form.Group>
@@ -136,7 +146,7 @@ export default class Order extends Component {
                                     <Form.Label>Delivery Address</Form.Label>
                                     <Form.Control required autoComplete="off"
                                         type="test" name="deliveryAddress"
-                                        value={deliveryAddress} onChange={this.orderChange}
+                                        value={deliveryAddress} onChange={this.eventChange}
                                         className={"bg-dark text-white"}
                                         placeholder="Enter Delivery Address" />
                                 </Form.Group>
@@ -152,7 +162,7 @@ export default class Order extends Component {
                                 <FontAwesomeIcon icon={faUndo} /> Reset
                             </Button>{' '}
                             <Button size="sm" variant="info" type="button" onClick={this.orderList.bind()}>
-                                <FontAwesomeIcon icon={faList} /> Order List
+                                <FontAwesomeIcon icon={faList} /> Event List
                             </Button>
                         </Card.Footer>
                     </Form>
