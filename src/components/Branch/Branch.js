@@ -1,6 +1,9 @@
 import React,{Component} from 'react';
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> 0d46ec9ff8e69a72d5d04aa8069e20a8146acdee
 import {Card, Form, Button, Col } from 'react-bootstrap';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faSave, faPlusSquare, faUndo, faList, faEdit} from '@fortawesome/free-solid-svg-icons';
@@ -33,7 +36,11 @@ export default class Branch extends Component {
    
 
     findBranchById = (branchId) => {
+<<<<<<< HEAD
         axios.get("http://localhost:8081/api/v1/branches/"+branchId)
+=======
+        axios.get("http://localhost:8081/rest/branches/"+branchId)
+>>>>>>> 0d46ec9ff8e69a72d5d04aa8069e20a8146acdee
         .then(response => {
             if(response.data != null){
                 this.setState({
@@ -63,7 +70,11 @@ export default class Branch extends Component {
                     
         };
 
+<<<<<<< HEAD
         axios.post("http://localhost:8081/api/v1/branches", branch)
+=======
+        axios.post("http://localhost:8081/rest/branches", branch)
+>>>>>>> 0d46ec9ff8e69a72d5d04aa8069e20a8146acdee
             .then(response => {
                 if(response.data != null){
                     this.setState({"show":true, "method":"post"});
@@ -84,7 +95,11 @@ export default class Branch extends Component {
                     branchState: this.state.branchState,
                   
         };
+<<<<<<< HEAD
         axios.put("http://localhost:8081/api/v1/branches", branch)
+=======
+        axios.put("http://localhost:8081/rest/branches", branch)
+>>>>>>> 0d46ec9ff8e69a72d5d04aa8069e20a8146acdee
         .then(response => {
             if(response.data != null) {
                 this.setState({"show":true, "method":"put"});
@@ -160,4 +175,11 @@ export default class Branch extends Component {
             </div>
         );
     }
+<<<<<<< HEAD
 }
+=======
+}
+
+
+
+>>>>>>> 0d46ec9ff8e69a72d5d04aa8069e20a8146acdee

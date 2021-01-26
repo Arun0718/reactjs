@@ -33,7 +33,11 @@ export default class Order extends Component {
    
 
     findOrderById = (orderId) => {
+<<<<<<< HEAD
         axios.get("http://localhost:8084/api/v1/orders/"+orderId)
+=======
+        axios.get("http://localhost:8081/rest/orders/"+orderId)
+>>>>>>> 0d46ec9ff8e69a72d5d04aa8069e20a8146acdee
         .then(response => {
             if(response.data != null){
                 this.setState({
@@ -63,7 +67,11 @@ export default class Order extends Component {
                     
         };
 
+<<<<<<< HEAD
         axios.post("http://localhost:8084/api/v1/orders", order)
+=======
+        axios.post("http://localhost:8081/rest/orders", order)
+>>>>>>> 0d46ec9ff8e69a72d5d04aa8069e20a8146acdee
             .then(response => {
                 if(response.data != null){
                     this.setState({"show":true, "method":"post"});
@@ -84,7 +92,11 @@ export default class Order extends Component {
                     deliveryAddress: this.state.deliveryAddress,
                   
         };
+<<<<<<< HEAD
         axios.put("http://localhost:8084/api/v1/orders", order)
+=======
+        axios.put("http://localhost:8081/rest/orders", order)
+>>>>>>> 0d46ec9ff8e69a72d5d04aa8069e20a8146acdee
         .then(response => {
             if(response.data != null) {
                 this.setState({"show":true, "method":"put"});

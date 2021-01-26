@@ -23,7 +23,11 @@ export default class BranchList extends Component {
     }
 
     findAllBranches(){
+<<<<<<< HEAD
         axios.get("http://localhost:8081/api/v1/branches")
+=======
+        axios.get("http://localhost:8081/rest/branches")
+>>>>>>> 0d46ec9ff8e69a72d5d04aa8069e20a8146acdee
             .then(response => response.data)
             .then((data) => {
                 this.setState({branches: data});
@@ -33,7 +37,11 @@ export default class BranchList extends Component {
    
 
     deleteBranch = (branchId) => {
+<<<<<<< HEAD
         axios.delete("http://localhost:8081/api/v1/branches/"+branchId)
+=======
+        axios.delete("http://localhost:8081/rest/branches/"+branchId)
+>>>>>>> 0d46ec9ff8e69a72d5d04aa8069e20a8146acdee
         .then(response => {
             if(response.data != null) {
                 this.setState({"show":true});
@@ -44,7 +52,11 @@ export default class BranchList extends Component {
             } else {
                 this.setState({"show":false});
             }
+<<<<<<< HEAD
         } );
+=======
+        });
+>>>>>>> 0d46ec9ff8e69a72d5d04aa8069e20a8146acdee
         
    
     };
@@ -94,7 +106,11 @@ export default class BranchList extends Component {
                                         <td>
                                             <ButtonGroup>
                                                 <Link to={"editBranch/"+branch.id} className="btn btn-sm btn-outline-primary"><FontAwesomeIcon icon={faEdit} /></Link>{' '}
+<<<<<<< HEAD
                                                 <Button size="sm" variant="outline-danger" onClick={this.deleteOrder.bind(this, branch.id)}><FontAwesomeIcon icon={faTrash} /></Button>
+=======
+                                                <Button size="sm" variant="outline-danger" onClick={this.deleteBranch.bind(this, branch.id)}><FontAwesomeIcon icon={faTrash} /></Button>
+>>>>>>> 0d46ec9ff8e69a72d5d04aa8069e20a8146acdee
                                             </ButtonGroup>
                                         </td>
                                     </tr>
@@ -103,6 +119,13 @@ export default class BranchList extends Component {
                               </tbody>
                         </Table>
                     </Card.Body>
+<<<<<<< HEAD
+=======
+                    <Card.Footer style={{"textAlign":"right"}}>
+                    <Link to={"addPayment"} className="nav-link">Proceed to Payment</Link>
+
+                    </Card.Footer>
+>>>>>>> 0d46ec9ff8e69a72d5d04aa8069e20a8146acdee
                    
                 </Card>
             </div>

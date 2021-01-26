@@ -23,7 +23,11 @@ export default class OrderList extends Component {
     }
 
     findAllOrders(){
+<<<<<<< HEAD
         axios.get("http://localhost:8084/api/v1/orders")
+=======
+        axios.get("http://localhost:8081/rest/orders")
+>>>>>>> 0d46ec9ff8e69a72d5d04aa8069e20a8146acdee
             .then(response => response.data)
             .then((data) => {
                 this.setState({orders: data});
@@ -33,7 +37,11 @@ export default class OrderList extends Component {
    
 
     deleteOrder = (orderId) => {
+<<<<<<< HEAD
         axios.delete("http://localhost:8084/api/v1/orders/"+orderId)
+=======
+        axios.delete("http://localhost:8081/rest/orders/"+orderId)
+>>>>>>> 0d46ec9ff8e69a72d5d04aa8069e20a8146acdee
         .then(response => {
             if(response.data != null) {
                 this.setState({"show":true});
@@ -103,9 +111,23 @@ export default class OrderList extends Component {
                               </tbody>
                         </Table>
                     </Card.Body>
+<<<<<<< HEAD
+=======
+                    <Card.Footer style={{"textAlign":"right"}}>
+                    <Link to={"addBranch"} className="nav-link">Proceed to branch</Link>
+
+                    </Card.Footer>
+>>>>>>> 0d46ec9ff8e69a72d5d04aa8069e20a8146acdee
                    
                 </Card>
             </div>
         );
     }
+<<<<<<< HEAD
 }
+=======
+}
+
+
+
+>>>>>>> 0d46ec9ff8e69a72d5d04aa8069e20a8146acdee
