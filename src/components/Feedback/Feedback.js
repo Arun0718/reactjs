@@ -23,17 +23,17 @@ export default class Feedback extends Component {
     };
 
     componentDidMount() {
-        const orderId = +this.props.match.params.id;
-        if(orderId) {
-            this.findFeedbackById(orderId);
+        const feedbackId = +this.props.match.params.id;
+        if(feedbackId) {
+            this.findFeedbackById(feedbackId);
         }
        
     }
 
    
 
-    findFeedbackById = (orderId) => {
-        axios.get("http://localhost:8084/api/v1/feedbacks/"+orderId)
+    findFeedbackById = (feedbackId) => {
+        axios.get("http://localhost:8084/api/v1/feedbacks/"+feedbackId)
         .then(response => {
             if(response.data != null){
                 this.setState({

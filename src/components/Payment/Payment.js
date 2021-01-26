@@ -1,4 +1,3 @@
-
 import React,{Component} from 'react';
 
 
@@ -131,7 +130,7 @@ export default class Payment extends Component {
                             <Form.Group as={Col} controlId="formGridTitle">
                                     <Form.Label>NameOnTheCard</Form.Label>
                                     <Form.Control required autoComplete="off"
-                                        type="test" name="nameOnTheCard"
+                                        type="text" name="nameOnTheCard"
                                         value={nameOnTheCard} onChange={this.paymentChange}
                                         className={"bg-dark text-white"}
                                         placeholder="Enter Name On The Card" />
@@ -139,7 +138,7 @@ export default class Payment extends Component {
                                 <Form.Group as={Col} controlId="formGridTitle">
                                     <Form.Label>Cvv</Form.Label>
                                     <Form.Control required autoComplete="off"
-                                        type="test" name="cvv"
+                                        type="tel" name="cvv" minlength="3" maxlength="3"
                                         value={cvv} onChange={this.paymentChange}
                                         className={"bg-dark text-white"}
                                         placeholder="Enter Cvv Number" />
@@ -147,10 +146,10 @@ export default class Payment extends Component {
                                 <Form.Group as={Col} controlId="formGridAuthor">
                                     <Form.Label>Expiry Date</Form.Label>
                                     <Form.Control required autoComplete="off"
-                                        type="test" name="expiryDate"
+                                        type="text" name="expiryDate" pattern="(?:0[1-9]|1[0-2])/[0-9]{2}"
                                         value={expiryDate} onChange={this.paymentChange}
                                         className={"bg-dark text-white"}
-                                        placeholder="Enter Expiry Date" />
+                                        placeholder="Enter Expiry Date MM/YY" />
                                 </Form.Group>
                             </Form.Row>
                             <Form.Row>
@@ -158,7 +157,7 @@ export default class Payment extends Component {
                                 <Form.Group as={Col} controlId="formGridISBNNumber">
                                     <Form.Label>Card Number</Form.Label>
                                     <Form.Control required autoComplete="off"
-                                        type="test" name="cardno"
+                                        type="tel" name="cardno" minlength="16" maxlength="16"
                                         value={cardno} onChange={this.paymentChange}
                                         className={"bg-dark text-white"}
                                         placeholder="Enter Card Number" />
@@ -183,4 +182,3 @@ export default class Payment extends Component {
         );
     }
 }
-

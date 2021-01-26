@@ -17,7 +17,10 @@ import BranchList from './components/Branch/BranchList';
 import Customer from './components/Customer/Customer';
 import CustomerList from './components/Customer/CustomerList';
 import Login from './components/User/Login';
-
+import Event from './components/Event/Event';
+import EventList from './components/Event/EventList';
+import Feedback from './components/Feedback/Feedback';
+import FeedbackList from './components/Feedback/FeedbackList';
 
 import Footer from './components/Footer';
 
@@ -62,6 +65,17 @@ export default function App() {
                         <Route path="/addCustomer" exact component={Customer}/>
                         <Route path="/editCustomer/:id" exact component={Customer}/>
                         <Route path="/listCustomer" exact component={CustomerList}/>
+
+                        <Route path="/addEvent" exact component={Event}/>
+                        <Route path="/editEvent/:id" exact component={Event}/>
+                        <Route path="/listEvent" exact component={EventList}/>
+
+                        <Route path="/addFeedback" exact component={Feedback}/>
+                        <Route path="/editFeedback/:id" exact component={Feedback}/>
+                        <Route path="/listFeedback" exact component={FeedbackList}/>
+
+                        
+
                         
 
                     </Switch>

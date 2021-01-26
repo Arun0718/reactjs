@@ -32,14 +32,14 @@ export default class FeedbackList extends Component {
 
    
 
-    deleteFeedback = (orderId) => {
-        axios.delete("http://localhost:8084/api/v1/feedbacks/"+orderId)
+    deleteFeedback = (feedbackId) => {
+        axios.delete("http://localhost:8084/api/v1/feedbacks/"+feedbackId)
         .then(response => {
             if(response.data != null) {
                 this.setState({"show":true});
                 setTimeout(() => this.setState({"show":false}),3000);
                 this.setState({
-                    feedbacks:this.state.feedbacks.filter(feedback => feedback.id !== orderId)
+                    feedbacks:this.state.feedbacks.filter(feedback => feedback.id !== feedbackId)
                 });
             } else {
                 this.setState({"show":false});
